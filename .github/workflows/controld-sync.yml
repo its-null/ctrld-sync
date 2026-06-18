@@ -1,3 +1,5 @@
+name: Control D Sync
+
 on:
   schedule:
     # Runs automatically once a day at 4:00 AM UTC
