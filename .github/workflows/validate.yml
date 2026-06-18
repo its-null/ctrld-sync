@@ -35,24 +35,3 @@ jobs:
         env:
           TOKEN: ${{ secrets.TOKEN }}
           PROFILE: ${{ secrets.PROFILE }}
-
-  sync:
-    runs-on: ubuntu-latest
-    needs: validate
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: "pip"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Sync
-        run: python control_d_sync.py
-        env:
-          TOKEN: ${{ secrets.TOKEN }}
-          PROFILE: ${{ secrets.PROFILE }}
