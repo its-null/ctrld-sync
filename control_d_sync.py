@@ -217,10 +217,10 @@ class GithubClient:
             self._cache[url] = r.json()
         return self._cache[url]
 
-    async def fetch_all(self, urls: list[str]) -> list[tuple[str, dict | Exception]]:
+    async def fetch_all(self, urls: list[str]) -> list[tuple[str, dict | BaseException]]:
         """Fetch all URLs concurrently. Returns (url, result_or_exception) pairs."""
         tasks = [self.fetch(url) for url in urls]
-        results: list[dict | Exception] = await asyncio.gather(*tasks, return_exceptions=True)
+        results: list[dict | BaseException] = await asyncio.gather(*tasks, return_exceptions=True)
         return list(zip(urls, results))
 
 
@@ -429,7 +429,7 @@ async def _run(cfg: Config, dry_run: bool) -> int:
 
         folder_data_list: list[dict] = []
         for url, result in raw_results:
-            if isinstance(result, Exception):
+            if isinstance(result, BaseException):
                 log.error("Failed to fetch %s: %s", url, result)
             else:
                 folder_data_list.append(result)
