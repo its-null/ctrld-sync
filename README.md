@@ -1,6 +1,6 @@
 # Control D Sync
 
-[![Sync](https://github.com/its-null/ctrld-sync/actions/workflows/sync.yml/badge.svg)](https://github.com/its-null/ctrld-sync/actions/workflows/sync.yml)
+[![Ctrld Sync](https://github.com/its-null/ctrld-sync/actions/workflows/controld-sync.yml/badge.svg)](https://github.com/its-null/ctrld-sync/actions/workflows/controld-sync.yml)
 
 A tiny Python script that keeps your Control D Folders in sync with a set of
 remote block-lists.
