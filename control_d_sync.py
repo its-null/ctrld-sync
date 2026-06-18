@@ -241,7 +241,7 @@ class ProfileSyncer:
         return {
             g["group"].strip(): str(g["PK"])
             for g in data.get("body", {}).get("groups", [])
-            if g.get("group") and g.get("PK")
+            if g.get("group") and g.get("group").strip() and g.get("PK")
         }
 
     async def _existing_hostnames(self, profile_id: str) -> set[str]:
@@ -369,13 +369,27 @@ class ProfileSyncer:
     async def sync(self, profile_id: str, folder_data_list: list[dict]) -> ProfileResult:
         pr = ProfileResult(profile_id=profile_id)
 
+        # Validate folder data structure
+        valid_folders = []
+        for fd in folder_data_list:
+            if not isinstance(fd.get("group"), dict):
+                log.warning("Skipping folder with invalid 'group' structure")
+                continue
+            valid_folders.append(fd)
+
+        if not valid_folders:
+            pr.fetch_errors.append("No valid folders after validation")
+            return pr
+
+        folder_data_list = valid_folders
+
         # 1. Delete managed folders that already exist
         existing = await self._list_folders(profile_id)
-        delete_tasks = [
-            self._delete_folder(profile_id, fd["group"]["group"].strip(), existing[fd["group"]["group"].strip()])
-            for fd in folder_data_list
-            if fd["group"]["group"].strip() in existing
-        ]
+        delete_tasks = []
+        for fd in folder_data_list:
+            grp_name = fd.get("group", {}).get("group", "").strip()
+            if grp_name and grp_name in existing:
+                delete_tasks.append(self._delete_folder(profile_id, grp_name, existing[grp_name]))
         if delete_tasks:
             await asyncio.gather(*delete_tasks)
 
@@ -384,10 +398,13 @@ class ProfileSyncer:
 
         # 3. Create folders sequentially (API is finicky with concurrent creates)
         for fd in folder_data_list:
-            grp = fd["group"]
-            name = grp["group"].strip()
-            do: int = grp.get("action", {}).get("do", 0)
-            status: int = grp.get("action", {}).get("status", 0)
+            grp = fd.get("group", {})
+            name = grp.get("group", "").strip()
+            if not name:
+                log.warning("Skipping folder with missing or empty 'group' name")
+                continue
+            do: int = grp.get("action", {}).get("do", 1)
+            status: int = grp.get("action", {}).get("status", 1)
             hostnames: list[str] = [r["PK"] for r in fd.get("rules", []) if r.get("PK")]
 
             fr = FolderResult(name=name)
