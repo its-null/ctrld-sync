@@ -30,8 +30,8 @@ jobs:
 
     - name: Run Control D Sync Script
       env:
-        TOKEN: ${{ secrets.CONTROLD_TOKEN }}
-        PROFILE: ${{ secrets.CONTROLD_PROFILE }}
+        TOKEN: ${{ secrets.TOKEN }}
+        PROFILE: ${{ secrets.PROFILE }}
       run: |
         chmod +x control_d_sync.py
         python control_d_sync.py
