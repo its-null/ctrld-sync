@@ -80,11 +80,11 @@ if DRY_RUN:
     CTRLD_TOKEN = CTRLD_TOKEN or "dummy_token_for_testing"
     CTRLD_PROFILE = CTRLD_PROFILES or ["dummy_profile_id_for_testing"]
 
-if not TOKEN:
+if not CTRLD_TOKEN:
     log.critical("Missing TOKEN environment variable.")
     exit(1)
 
-if not PROFILE_IDS:
+if not CTRLD_PROFILE:
     log.critical("No PROFILE IDs discovered in environment variables.")
     exit(1)
 
