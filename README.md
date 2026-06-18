@@ -35,7 +35,7 @@ https://controld.com/dashboard/profiles/741861frakbm/filters
    ```bash
    git clone https://github.com/your-username/ctrld-sync.git
    cd ctrld-sync
-   uv sync
+   python control_d_sync.py [--dry-run] [--log-level DEBUG|INFO|WARNING]
    ```
 
 2. **Configure secrets**  
@@ -46,7 +46,7 @@ https://controld.com/dashboard/profiles/741861frakbm/filters
    ```
 
 3. **Configure Folders**  
-   Edit the `FOLDER_URLS` list in `main.py` to include the URLs of the JSON block-lists you want to sync.
+   Edit the `FOLDER_URLS` list in `control_d_sync.py` to include the URLs of the JSON block-lists you want to sync.
 
 > [!NOTE]
 > Currently only Folders with one action are supported.
@@ -54,7 +54,7 @@ https://controld.com/dashboard/profiles/741861frakbm/filters
 
 4. **Run locally**
    ```bash
-   uv run python main.py
+   python control_d_sync.py [--dry-run] [--log-level DEBUG|INFO|WARNING]
    ```
 
 5. **Run in CI**  
@@ -71,4 +71,3 @@ https://controld.com/dashboard/profiles/741861frakbm/filters
 
 ## Requirements
 - Python 3.12+  
-- `uv` (for dependency management)
