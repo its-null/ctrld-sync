@@ -63,8 +63,8 @@ log = logging.getLogger("control-d-sync")
 # Constants & Configuration
 # --------------------------------------------------------------------------- #
 API_BASE = "https://controld.com"
-TOKEN = os.getenv("TOKEN")
-PROFILE_IDS = [p.strip() for p in os.getenv("PROFILE", "").split(",") if p.strip()]
+CTRLD_TOKEN = os.getenv("CTRLD_TOKEN")
+CTRLD_PROFILE = [p.strip() for p in os.getenv("PROFILE", "").split(",") if p.strip()]
 DRY_RUN = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
 
 FOLDER_URLS = [
@@ -77,8 +77,8 @@ FOLDER_URLS = [
 # When DRY_RUN is active, dummy secrets are acceptable for initialization testing
 if DRY_RUN:
     log.info("--- DRY RUN MODE ENABLED ---")
-    TOKEN = TOKEN or "dummy_token_for_testing"
-    PROFILE_IDS = PROFILE_IDS or ["dummy_profile_id_for_testing"]
+    CTRLD_TOKEN = CTRLD_TOKEN or "dummy_token_for_testing"
+    CTRLD_PROFILE = CTRLD_PROFILES or ["dummy_profile_id_for_testing"]
 
 if not TOKEN:
     log.critical("Missing TOKEN environment variable.")
@@ -93,7 +93,7 @@ if not PROFILE_IDS:
 # --------------------------------------------------------------------------- #
 def get_headers() -> Dict[str, str]:
     return {
-        "Authorization": f"Bearer {TOKEN}",
+        "Authorization": f"Bearer {CTRLD_TOKEN}",
         "Content-Type": "application/json",
         "Accept": "application/json",
     }
@@ -202,7 +202,7 @@ def add_rules_to_folder(client: httpx.Client, profile_id: str, folder_id: str, r
             time.sleep(1)
 
 def main():
-    log.info("Starting Control D Blocklist Sync Engine")
+    log.info("Starting Control D Sync Engine")
     
     with httpx.Client(timeout=30.0) as client:
         parsed_folders = []

@@ -1,4 +1,4 @@
-name: Control D Sync
+name: Ctrld Sync
 
 on:
   schedule:
