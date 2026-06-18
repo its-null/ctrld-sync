@@ -220,7 +220,7 @@ class GithubClient:
     async def fetch_all(self, urls: list[str]) -> list[tuple[str, dict | Exception]]:
         """Fetch all URLs concurrently. Returns (url, result_or_exception) pairs."""
         tasks = [self.fetch(url) for url in urls]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        results: list[dict | Exception] = await asyncio.gather(*tasks, return_exceptions=True)
         return list(zip(urls, results))
 
 
@@ -372,21 +372,15 @@ class ProfileSyncer:
         # Validate folder data structure
         valid_folders = []
         for fd in folder_data_list:
-            if not isinstance(fd.get("group"), dict):
-                log.warning("Skipping folder with invalid 'group' structure")
+            if not isinstance(fd, dict) or not isinstance(fd.get("group"), dict):
+                log.warning("Skipping folder with invalid structure")
                 continue
             valid_folders.append(fd)
-
-        if not valid_folders:
-            pr.fetch_errors.append("No valid folders after validation")
-            return pr
-
-        folder_data_list = valid_folders
 
         # 1. Delete managed folders that already exist
         existing = await self._list_folders(profile_id)
         delete_tasks = []
-        for fd in folder_data_list:
+        for fd in valid_folders:
             grp_name = fd.get("group", {}).get("group", "").strip()
             if grp_name and grp_name in existing:
                 delete_tasks.append(self._delete_folder(profile_id, grp_name, existing[grp_name]))
@@ -397,7 +391,7 @@ class ProfileSyncer:
         seen = await self._existing_hostnames(profile_id)
 
         # 3. Create folders sequentially (API is finicky with concurrent creates)
-        for fd in folder_data_list:
+        for fd in valid_folders:
             grp = fd.get("group", {})
             name = grp.get("group", "").strip()
             if not name:
