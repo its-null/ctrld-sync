@@ -93,6 +93,7 @@ class Config:
                 "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/controld/referral-allow-folder.json",
                 "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/controld/spam-idns-folder.json",
                 "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/controld/ultimate-known_issues-allow-folder.json",
+                "https://raw.githubusercontent.com/yokoffing/Control-D-Config/refs/heads/main/folders/potentially-malicious-ips.json",
             ],
         )
 
@@ -143,8 +144,6 @@ class ProfileResult:
 # HTTP layer
 # --------------------------------------------------------------------------- #
 class ApiClient:
-    """Thin async wrapper around the Control-D REST API."""
-
     BASE = "https://api.controld.com/profiles"
 
     def __init__(self, cfg: Config) -> None:
@@ -387,8 +386,8 @@ class ProfileSyncer:
         for fd in folder_data_list:
             grp = fd["group"]
             name = grp["group"].strip()
-            do: int = grp["action"]["do"]
-            status: int = grp["action"]["status"]
+            do: int = grp.get("action", {}).get("do", 0)
+            status: int = grp.get("action", {}).get("status", 0)
             hostnames: list[str] = [r["PK"] for r in fd.get("rules", []) if r.get("PK")]
 
             fr = FolderResult(name=name)
