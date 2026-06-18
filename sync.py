@@ -64,7 +64,7 @@ log = logging.getLogger("control-d-sync")
 # --------------------------------------------------------------------------- #
 API_BASE = "https://controld.com"
 CTRLD_TOKEN = os.getenv("CTRLD_TOKEN")
-CTRLD_PROFILE = [p.strip() for p in os.getenv("PROFILE", "").split(",") if p.strip()]
+CTRLD_PROFILE = [p.strip() for p in os.getenv("CTRLD_PROFILE", "").split(",") if p.strip()]
 DRY_RUN = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
 
 FOLDER_URLS = [
@@ -81,11 +81,11 @@ if DRY_RUN:
     CTRLD_PROFILE = CTRLD_PROFILES or ["dummy_profile_id_for_testing"]
 
 if not CTRLD_TOKEN:
-    log.critical("Missing TOKEN environment variable.")
+    log.critical("Missing CTRLD_TOKEN environment variable.")
     exit(1)
 
 if not CTRLD_PROFILE:
-    log.critical("No PROFILE IDs discovered in environment variables.")
+    log.critical("No CTRLD_PROFILE discovered in environment variables.")
     exit(1)
 
 # --------------------------------------------------------------------------- #
