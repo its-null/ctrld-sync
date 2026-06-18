@@ -18,7 +18,7 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: pip install
+        run: pip install -r pyproject.toml
 
       - name: Lint
         run: |
